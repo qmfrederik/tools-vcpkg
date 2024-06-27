@@ -1,0 +1,76 @@
+name: Build packages
+
+on:
+  push: 
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  windows:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bootstrap vcpkg
+        run: ./scripts/bootstrap.ps1
+      - name: Install libobjc2
+        run: ./vcpkg install libobjc2:x64-windows-llvm
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: installed-windows
+          path: ./installed
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: buildtrees-windows
+          path: ./buildtrees
+
+  ubuntu-2404:
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          apt-get update
+          apt-get install -y clang curl zip unzip tar git pkg-config
+      - name: Bootstrap vcpkg
+        run: ./bootstrap-vcpkg.sh
+      - name: Install libobjc2
+        run: ./vcpkg install libobjc2:x64-linux-llvm
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: installed-ubuntu-24-04
+          path: ./installed
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: buildtrees-ubuntu-24-04
+          path: ./buildtrees
+
+  rocklinux-9:
+    runs-on: ubuntu-latest
+    container:
+      image: rockylinux:9
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          yum install -y clang zip unzip tar git pkg-config
+      - name: Bootstrap vcpkg
+        run: ./bootstrap-vcpkg.sh
+      - name: Install libobjc2
+        run: ./vcpkg install libobjc2:x64-linux-llvm
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: installed-rockylinux-9
+          path: ./installed
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: buildtrees-rockylinux-9
+          path: ./buildtrees
