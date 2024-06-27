@@ -19,8 +19,21 @@ if(VCPKG_TARGET_IS_WINDOWS)
     vcpkg_list(APPEND OPTIONS "-DBASH_EXECUTABLE=${MSYS_ROOT}/usr/bin/bash.exe")
 endif()
 
+# Get the Windows 10 include location (which we need to pass to MSYS)
+get_filename_component(WINKIT_ROOT "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows Kits\\Installed Roots;KitsRoot10]" ABSOLUTE CACHE)
+file(GLOB WINKIT_LIB_CANDIDATES "${WINKIT_ROOT}/Lib/*")
+list(GET WINKIT_LIB_CANDIDATES 0 WINKIT_LIB_CANDIDATE)
+get_filename_component(WINKIT_LIB "${WINKIT_LIB_CANDIDATE}/um/x64" ABSOLUTE CACHE)
+# # Escape spaces
+# string(REPLACE " " "\\ " WINKIT_LIB "${WINKIT_LIB}")
+# # Fix path
+# string(REGEX REPLACE "^([a-zA-Z]):/" "/\\1/" WINKIT_LIB "${WINKIT_LIB}")
+
+#set(ENV{LDFLAGS} "-fuse-ld=lld -L\'${WINKIT_LIB}\'")
+
 vcpkg_configure_make(
     AUTOCONFIG
+    OPTIONS --target=x86_64-pc-windows --host=x86_64-pc-windows LDFLAGS=\"-fuse-ld=lld -L\"${WINKIT_LIB}\"\"
     SOURCE_PATH ${SOURCE_PATH}
 )
 
