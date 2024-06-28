@@ -9,12 +9,6 @@ vcpkg_from_github(
     PATCHES
 )
 
-# Get the Windows 10 include location (which we need to pass to MSYS)
-get_filename_component(WINKIT_ROOT "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows Kits\\Installed Roots;KitsRoot10]" ABSOLUTE CACHE)
-file(GLOB WINKIT_LIB_CANDIDATES "${WINKIT_ROOT}/Lib/*")
-list(GET WINKIT_LIB_CANDIDATES 0 WINKIT_LIB_CANDIDATE)
-get_filename_component(WINKIT_LIB "${WINKIT_LIB_CANDIDATE}/um/x64" ABSOLUTE CACHE)
-
 vcpkg_list(SET OPTIONS)
 if(VCPKG_TARGET_IS_WINDOWS)
     vcpkg_acquire_msys(MSYS_ROOT
@@ -44,8 +38,38 @@ if(VCPKG_TARGET_IS_WINDOWS)
     set(ENV{PATH} "${native_path_list}")
     message("Using path ${native_path_list}")
 
+    # Cleanup previous build dirs
+    file(REMOVE_RECURSE "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-${short_name_RELEASE}"
+                        "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-${short_name_DEBUG}"
+                        "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}")
+
+    # Some PATH handling for dealing with spaces....some tools will still fail with that!
+    # In particular, the libtool install command is unable to install correctly to paths with spaces.
+    string(REPLACE " " "\\ " current_installed_dir_escaped "${CURRENT_INSTALLED_DIR}")
+    set(current_installed_dir_msys "${CURRENT_INSTALLED_DIR}")
+
+    if(CMAKE_HOST_WIN32)
+        string(REGEX REPLACE "^([a-zA-Z]):/" "/\\1/" current_installed_dir_msys "${current_installed_dir_msys}")
+    endif()
+
+    # Set configure paths
+    set(path_suffix "/")
+
+    vcpkg_list(APPEND CONFIGURE_OPTIONS
+                        # ${prefix} has an extra backslash to prevent early expansion when calling `bash -c configure "..."`.
+                        "--prefix=${current_installed_dir_msys}${path_suffix}"
+                        # Important: These should all be relative to prefix!
+                        "--bindir=\\\${prefix}/../tools/${PORT}${path_suffix}/bin"
+                        "--sbindir=\\\${prefix}/../tools/${PORT}${path_suffix}/sbin"
+                        "--libdir=\\\${prefix}/lib" # On some Linux distributions lib64 is the default
+                        "--datarootdir=\\\${prefix}/share/${PORT}"
+                        "CC=clang.exe"
+                        "CXX=clang++.exe")
+
+    list(JOIN CONFIGURE_OPTIONS " " CONFIGURE_OPTIONS)
+
     vcpkg_execute_required_process(
-        COMMAND ${base_cmd} -c "./configure CC=clang.exe CXX=clang++.exe"
+        COMMAND ${base_cmd} -c "./configure ${CONFIGURE_OPTIONS}"
         WORKING_DIRECTORY "${SOURCE_PATH}"
         LOGNAME "config-${TARGET_TRIPLET}-${short_name_${current_buildtype}}"
         SAVE_LOG_FILES config.log
