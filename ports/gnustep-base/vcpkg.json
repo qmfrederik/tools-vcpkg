@@ -10,10 +10,23 @@
       "name": "libobjc2"
     },
     {
-      "name": "libffi"
+      "name": "gnustep-make"
     },
     {
-      "name": "gnustep-make"
+      "name": "libffi",
+      "platform": "windows"
+    },
+    {
+      "name": "libiconv",
+      "platform": "windows"
+    },
+    {
+      "name": "libxml2",
+      "platform": "windows"
+    },
+    {
+      "name": "curl",
+      "platform": "windows"
     }
   ]
 }

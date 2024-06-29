@@ -63,6 +63,8 @@ if(VCPKG_TARGET_IS_WINDOWS)
                         "--datarootdir=\\\${prefix}/share/${PORT}"
                         "--host=x86_64-pc-windows"
                         "--target=x86_64-pc-windows"
+                        # For now
+                        "--disable-tls"
                         "CC=clang.exe"
                         "CXX=clang++.exe"
                         "LDFLAGS=-fuse-ld=lld")
