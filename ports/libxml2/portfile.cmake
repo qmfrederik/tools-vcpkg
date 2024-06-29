@@ -81,6 +81,8 @@ file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include")
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/share")
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/lib/xml2Conf.sh" "${CURRENT_PACKAGES_DIR}/debug/lib/xml2Conf.sh")
 
+file(RENAME "${CURRENT_PACKAGES_DIR}/lib/libxml2.lib" "${CURRENT_PACKAGES_DIR}/lib/xml2.lib")
+
 file(COPY
     "${CMAKE_CURRENT_LIST_DIR}/vcpkg-cmake-wrapper.cmake"
     "${CMAKE_CURRENT_LIST_DIR}/usage"
