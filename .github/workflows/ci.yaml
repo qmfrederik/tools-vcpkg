@@ -26,40 +26,37 @@ jobs:
           name: buildtrees-windows
           path: ./buildtrees
 
-  ubuntu-2404:
+  linux:
     runs-on: ubuntu-latest
     container:
-      image: ubuntu:24.04
+      image: ${{ matrix.image }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: ubuntu-22.04
+            image: ubuntu:22.04
+            family: ubuntu
+          - name: ubuntu-24.04
+            image: ubuntu:24.04
+            family: ubuntu
+          - name: rockylinux-9
+            image: rockylinux:9
+            family: rhel
+          - name: rockylinux-8
+            image: rockylinux:8
+            family: rhel
     steps:
       - uses: actions/checkout@v4
-      - name: Install dependencies
+      - name: Install dependencies (Ubuntu)
         run: |
           apt-get update
           apt-get install -y clang curl zip unzip tar git pkg-config
-      - name: Bootstrap vcpkg
-        run: ./bootstrap-vcpkg.sh
-      - name: Install libobjc2
-        run: ./vcpkg install libobjc2:x64-linux-llvm
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: installed-ubuntu-24-04
-          path: ./installed
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: buildtrees-ubuntu-24-04
-          path: ./buildtrees
-
-  rocklinux-9:
-    runs-on: ubuntu-latest
-    container:
-      image: rockylinux:9
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install dependencies
+        if: matrix.family == 'ubuntu'
+      - name: Install dependencies (Enterprise Linux)
         run: |
           yum install -y clang zip unzip tar git pkg-config
+        if: matrix.family == 'rhel'
       - name: Bootstrap vcpkg
         run: ./bootstrap-vcpkg.sh
       - name: Install libobjc2
@@ -67,10 +64,10 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: installed-rockylinux-9
+          name: installed-${{ matrix.name }}
           path: ./installed
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: buildtrees-rockylinux-9
-          path: ./buildtrees
+          name: buildtrees-${{ matrix.name }}
+          path: ./buildtrees/**/*.log
