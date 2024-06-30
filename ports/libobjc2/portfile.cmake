@@ -10,6 +10,8 @@ vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS
         ${OPTIONS}
+        # Prevent picking up a default install location through gnustep-config
+        -DGNUSTEP_INSTALL_TYPE=NONE
 )
 
 vcpkg_cmake_install()
