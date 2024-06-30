@@ -51,16 +51,18 @@ jobs:
       - name: Install dependencies (Ubuntu)
         run: |
           apt-get update
-          apt-get install -y clang curl zip unzip tar git pkg-config
+          apt-get install -y clang curl zip unzip tar git pkg-config make
         if: matrix.family == 'ubuntu'
       - name: Install dependencies (Enterprise Linux)
         run: |
-          yum install -y clang zip unzip tar git pkg-config
+          yum install -y clang zip unzip tar git pkg-config which
         if: matrix.family == 'rhel'
       - name: Bootstrap vcpkg
         run: ./bootstrap-vcpkg.sh
       - name: Install libobjc2
         run: ./vcpkg install libobjc2:x64-linux-llvm
+      - name: Install gnustep-make
+        run: ./vcpkg install gnustep-make:x64-linux-llvm
       - uses: actions/upload-artifact@v4
         if: always()
         with:
