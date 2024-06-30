@@ -63,6 +63,17 @@ jobs:
         run: ./vcpkg install libobjc2:x64-linux-llvm
       - name: Install gnustep-make
         run: ./vcpkg install gnustep-make:x64-linux-llvm
+      - name: Install dependencies (Ubuntu)
+        run: |
+          apt-get update
+          apt-get install -y libxml2-dev libxslt-dev libcurl4-gnutls-dev gnutls-dev
+        if: matrix.family == 'ubuntu'
+      - name: Install dependencies (Enterprise Linux)
+        run: |
+          yum install -y libxml2-devel libxslt-devel libcurl-devel gnutls-devel libffi-devel libicu-devel
+        if: matrix.family == 'rhel'
+      - name: Install gnustep-base
+        run: ./vcpkg install gnustep-base:x64-linux-llvm
       - uses: actions/upload-artifact@v4
         if: always()
         with:
