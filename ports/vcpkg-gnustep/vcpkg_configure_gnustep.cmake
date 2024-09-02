@@ -1,7 +1,5 @@
 include_guard(GLOBAL)
 
-set(Z_VCPKG_CMAKE_GET_VARS_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE INTERNAL "")
-
 function(vcpkg_configure_gnustep)
     cmake_parse_arguments(PARSE_ARGV 0 "arg"
         ""
