@@ -3,7 +3,7 @@ include_guard(GLOBAL)
 set(Z_VCPKG_CMAKE_GET_VARS_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE INTERNAL "")
 
 function(vcpkg_install_gnustep)
-    if (VCPKG_TARGET_IS_LINUX)
+    if (VCPKG_TARGET_IS_LINUX OR VCPKG_TARGET_IS_WINDOWS)
         vcpkg_install_make(
             MAKEFILE GNUmakefile
             # Allow make to find gnustep-config, which is in bin/
