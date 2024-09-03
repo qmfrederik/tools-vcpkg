@@ -9,6 +9,16 @@ vcpkg_from_github(
     PATCHES
 )
 
+vcpkg_list(SET options)
+
+if (VCPKG_TARGET_IS_WINDOWS)
+    # Disable a bunch of options for now; this allows us to get a minimal libs-base port merged into main;
+    # and we can then light up extra features one by one.
+    vcpkg_list(APPEND options "--disable-iconv")
+    vcpkg_list(APPEND options "--disable-xml")
+    vcpkg_list(APPEND options "--disable-tls")
+endif ()
+
 vcpkg_configure_gnustep(
     SOURCE_PATH ${SOURCE_PATH}
     OPTIONS
@@ -16,9 +26,14 @@ vcpkg_configure_gnustep(
         --disable-importing-config-file
         # gnustep-config is not in PATH, so specify the path to the makefiles
         GNUSTEP_MAKEFILES=${CURRENT_INSTALLED_DIR}/share/GNUstep/Makefiles/
+        ${options}
 )
 
-vcpkg_install_gnustep()
+vcpkg_install_gnustep(
+    OPTIONS
+        # gnustep-config is not in PATH, so specify the path to the makefiles
+        GNUSTEP_MAKEFILES=${CURRENT_INSTALLED_DIR}/share/GNUstep/Makefiles/
+)
 
 vcpkg_fixup_pkgconfig()
 
