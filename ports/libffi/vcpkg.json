@@ -8,6 +8,10 @@
     {
       "name": "vcpkg-cmake-get-vars",
       "host": true
+    },
+    {
+      "name": "vcpkg-gnustep",
+      "host": true
     }
   ]
 }

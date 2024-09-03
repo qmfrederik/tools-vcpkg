@@ -13,10 +13,7 @@ vcpkg_extract_source_archive(
 vcpkg_list(SET options)
 if(VCPKG_TARGET_IS_WINDOWS)
     set(linkage_flag "-DFFI_STATIC_BUILD")
-    if(VCPKG_LIBRARY_LINKAGE STREQUAL "dynamic")
-        set(linkage_flag "-DFFI_BUILDING_DLL")
-    endif()
-    vcpkg_list(APPEND options "CFLAGS=\${CFLAGS} ${linkage_flag}")
+    vcpkg_list(APPEND options "CFLAGS=\"\${CFLAGS} ${linkage_flag}\"")
 endif()
 
 set(ccas_options "")
@@ -46,7 +43,7 @@ if(VCPKG_TARGET_IS_EMSCRIPTEN)
     set(configure_triplets BUILD_TRIPLET "--host=wasm32-unknown-emscripten --build=\$(\$SHELL \"${SOURCE_PATH}/config.guess\")")
 endif()
 
-vcpkg_configure_make(
+vcpkg_configure_gnustep(
     SOURCE_PATH "${SOURCE_PATH}"
     ${configure_triplets}
     USE_WRAPPERS
@@ -61,15 +58,14 @@ vcpkg_install_make()
 vcpkg_copy_pdbs()
 vcpkg_fixup_pkgconfig()
 
-if (VCPKG_LIBRARY_LINKAGE STREQUAL "static")
-    vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/ffi.h" "defined(FFI_STATIC_BUILD)" "1")
-endif()
+vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/ffi.h" "defined(FFI_STATIC_BUILD)" "1")
 
 file(INSTALL "${CMAKE_CURRENT_LIST_DIR}/usage" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}")
 file(INSTALL "${CMAKE_CURRENT_LIST_DIR}/unofficial-libffi-config.cmake" DESTINATION "${CURRENT_PACKAGES_DIR}/share/unofficial-libffi")
 file(INSTALL "${CMAKE_CURRENT_LIST_DIR}/libffiConfig.cmake" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}")
 
 file(REMOVE_RECURSE
+    "${CURRENT_PACKAGES_DIR}/debug/include"
     "${CURRENT_PACKAGES_DIR}/debug/share"
     "${CURRENT_PACKAGES_DIR}/share/man3"
 )
