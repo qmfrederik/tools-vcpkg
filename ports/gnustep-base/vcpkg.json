@@ -4,13 +4,17 @@
     "description": "The GNUstep Base Library is a library of general-purpose, non-graphical Objective C objects.",
     "homepage": "https://github.com/gnustep/libs-base",
     "license": "LGPL-2.1",
-    "supports": "!static & linux",
+    "supports": "!static & (linux | windows)",
     "dependencies": [
       {
         "name": "libobjc2"
       },
       {
         "name": "gnustep-make"
+      },
+      {
+        "name": "libffi",
+        "platform": "windows"
       },
       {
         "name": "vcpkg-gnustep",
