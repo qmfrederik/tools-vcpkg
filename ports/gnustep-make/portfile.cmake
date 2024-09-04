@@ -47,18 +47,27 @@ function(z_vcpkg_fixup_gnustep_path file find replace)
     file(WRITE ${file} "${contents}")
 endfunction()
 
-z_vcpkg_fixup_gnustep_path("${CURRENT_PACKAGES_DIR}/bin/gnustep-config" "${CURRENT_INSTALLED_DIR}" "$(realpath \"$(dirname $0)/../\")")
+set(vcpkg_package_prefix "${CURRENT_INSTALLED_DIR}")
+
+# vcpkg_build_make will convert Windows paths to Unix-like paths, so we need to do the same before we do a find and
+# replace operation.
+if (CMAKE_HOST_WIN32)
+    string(REPLACE " " [[\ ]] vcpkg_package_prefix "${vcpkg_package_prefix}")
+    string(REGEX REPLACE [[([a-zA-Z]):/]] [[/\1/]] vcpkg_package_prefix "${vcpkg_package_prefix}")
+endif()
+
+z_vcpkg_fixup_gnustep_path("${CURRENT_PACKAGES_DIR}/bin/gnustep-config" "${vcpkg_package_prefix}" "$(realpath \"$(dirname $0)/../\")")
 
 if (NOT VCPKG_BUILD_TYPE OR VCPKG_BUILD_TYPE STREQUAL "debug")
     # ./debug/share does not exist, so redirect to ./share; but fixup the other paths relative to ./debug
-    z_vcpkg_fixup_gnustep_path("${CURRENT_PACKAGES_DIR}/debug/bin/gnustep-config" "${CURRENT_INSTALLED_DIR}/debug/share" "$(realpath \"$(dirname $0)/../../share/\")")
-    z_vcpkg_fixup_gnustep_path("${CURRENT_PACKAGES_DIR}/debug/bin/gnustep-config" "${CURRENT_INSTALLED_DIR}" "$(realpath \"$(dirname $0)/../\")")
+    z_vcpkg_fixup_gnustep_path("${CURRENT_PACKAGES_DIR}/debug/bin/gnustep-config" "${vcpkg_package_prefix}/debug/share" "$(realpath \"$(dirname $0)/../../share/\")")
+    z_vcpkg_fixup_gnustep_path("${CURRENT_PACKAGES_DIR}/debug/bin/gnustep-config" "${vcpkg_package_prefix}" "$(realpath \"$(dirname $0)/../\")")
 endif()
 
 # because GNUstep.sh is sourced, use ${BASH_SOURCE[0]}.  This is less portable but works.
-z_vcpkg_fixup_gnustep_path("${CURRENT_PACKAGES_DIR}/share/GNUstep/Makefiles/GNUstep.sh" "${CURRENT_INSTALLED_DIR}" "$(realpath \"$(dirname \${BASH_SOURCE[0]})/../../../\")")
-z_vcpkg_fixup_gnustep_path("${CURRENT_PACKAGES_DIR}/share/GNUstep/Makefiles/GNUstep-reset.sh" "${CURRENT_INSTALLED_DIR}" "$(realpath \"$(dirname \${BASH_SOURCE[0]})/../../../\")")
-z_vcpkg_fixup_gnustep_path("${CURRENT_PACKAGES_DIR}/share/GNUstep/Makefiles/filesystem.sh" "${CURRENT_INSTALLED_DIR}" "$(realpath \"$(dirname \${BASH_SOURCE[0]})/../../../\")")
+z_vcpkg_fixup_gnustep_path("${CURRENT_PACKAGES_DIR}/share/GNUstep/Makefiles/GNUstep.sh" "${vcpkg_package_prefix}" "$(realpath \"$(dirname \${BASH_SOURCE[0]})/../../../\")")
+z_vcpkg_fixup_gnustep_path("${CURRENT_PACKAGES_DIR}/share/GNUstep/Makefiles/GNUstep-reset.sh" "${vcpkg_package_prefix}" "$(realpath \"$(dirname \${BASH_SOURCE[0]})/../../../\")")
+z_vcpkg_fixup_gnustep_path("${CURRENT_PACKAGES_DIR}/share/GNUstep/Makefiles/filesystem.sh" "${vcpkg_package_prefix}" "$(realpath \"$(dirname \${BASH_SOURCE[0]})/../../../\")")
 
 # gnustep-make has no headers
 set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
