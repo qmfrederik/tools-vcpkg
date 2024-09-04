@@ -9,11 +9,34 @@ vcpkg_from_github(
     PATCHES
 )
 
+vcpkg_list(SET options)
+
+if (VCPKG_TARGET_IS_WINDOWS)
+    # Resolving ivars fails without -lddmingw/-auto-import:
+    #   lld-link: error: undefined symbol: __objc_ivar_offset_NSFileWrapper._icon.@
+    #
+    # When using -auto-import without -runtime-psuedo-reloc, the linker complains:
+    #   lld-link: error: automatic dllimport of __objc_ivar_offset_NSFileWrapper._icon.@ in obj/libgnustep-gui.obj/NSFileWrapperExtensions.m.o requires pseudo relocations
+    #
+    # Using -auto-import and -runtime-pseudo-reloc still generates a warning, though:
+    #   lld-link: warning: runtime pseudo relocation in obj/libgnustep-gui.obj/NSFileWrapperExtensions.m.o against symbol __objc_ivar_offset_NSFileWrapper._icon.@ is too narrow (only 32 bits wide);
+    #   this can fail at runtime depending on memory layout
+    #
+    # https://blog.omega-prime.co.uk/2011/07/04/everything-you-never-wanted-to-know-about-dlls/ contains some more details about auto-import and pseudo-relocations
+    #
+    # This is required for building gnustep-gui and gnustep-back.  The ideal option is to embed these flags in their portfiles, but
+    # gnustep-gui contains a Model bundle, and it appears that LDFLAGS which are passed to gnustep-gui's ./configure are not passed
+    # onto that bundle.  Hence we inject them into gnustep-make.
+    #
+    # vcpkg_list(APPEND options "LDFLAGS='-Wl,-auto-import -Wl,-runtime-pseudo-reloc -fuse-ld=lld-link'")
+endif ()
+
 vcpkg_configure_gnustep(
     SOURCE_PATH ${SOURCE_PATH}
     OPTIONS
         --with-library-combo=ng-gnu-gnu
         --with-runtime-abi=gnustep-2.2
+        ${options}
 )
 
 vcpkg_install_gnustep()
