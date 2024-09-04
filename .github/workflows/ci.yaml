@@ -21,6 +21,8 @@ jobs:
         run: ./vcpkg install libffi:x64-windows-llvm
       - name: Install gnustep-base
         run: ./vcpkg install gnustep-base:x64-windows-llvm
+      - name: Install tiff
+        run: ./vcpkg install tiff:x64-windows-llvm
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -30,7 +32,7 @@ jobs:
         if: always()
         with:
           name: buildtrees-windows
-          path: ./buildtrees
+          path: ./buildtrees/**/*.log
 
   linux:
     runs-on: ubuntu-latest
