@@ -32,7 +32,7 @@ jobs:
         if: always()
         with:
           name: buildtrees-windows
-          path: ./buildtrees
+          path: ./buildtrees/**/*.log
 
   linux:
     runs-on: ubuntu-latest
