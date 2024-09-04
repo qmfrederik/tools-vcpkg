@@ -8,6 +8,9 @@ set(VCPKG_CMAKE_SYSTEM_NAME Linux)
 # release and debug builds in vcpkg.  This effectively breaks support for debug builds, for now.
 set(VCPKG_BUILD_TYPE release)
 
+# The toolchain file requires ProgramW6432 to determine the LLVM installation directory
+set(VCPKG_ENV_PASSTHROUGH_UNTRACKED "ProgramW6432") 
+
 # Configure toolchain
 set(VCPKG_CHAINLOAD_TOOLCHAIN_FILE "${CMAKE_CURRENT_LIST_DIR}/toolchains/x64-linux-llvm.toolchain.cmake")
 
