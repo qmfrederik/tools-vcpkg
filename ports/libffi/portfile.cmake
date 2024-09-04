@@ -64,6 +64,10 @@ file(INSTALL "${CMAKE_CURRENT_LIST_DIR}/usage" DESTINATION "${CURRENT_PACKAGES_D
 file(INSTALL "${CMAKE_CURRENT_LIST_DIR}/unofficial-libffi-config.cmake" DESTINATION "${CURRENT_PACKAGES_DIR}/share/unofficial-libffi")
 file(INSTALL "${CMAKE_CURRENT_LIST_DIR}/libffiConfig.cmake" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}")
 
+# Rename libffi.a to ffi.lib:
+file(RENAME "${CURRENT_PACKAGES_DIR}/lib/libffi.a" "${CURRENT_PACKAGES_DIR}/lib/ffi.lib")
+file(RENAME "${CURRENT_PACKAGES_DIR}/debug/lib/libffi.a" "${CURRENT_PACKAGES_DIR}/debug/lib/ffi.lib")
+
 file(REMOVE_RECURSE
     "${CURRENT_PACKAGES_DIR}/debug/include"
     "${CURRENT_PACKAGES_DIR}/debug/share"
