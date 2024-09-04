@@ -11,6 +11,10 @@ jobs:
     runs-on: windows-2022
     steps:
       - uses: actions/checkout@v4
+      - name: Check LLVM version
+        # We need at least LLVM 18.0 for proper Objective C support.  Visual Studio 2022 ships with LLVM 17,
+        # so we need to make sure we pick up clang from C:\Program Files\LLVM\bin\
+        run: clang --version
       - name: Bootstrap vcpkg
         run: ./scripts/bootstrap.ps1
       - name: Install libobjc2
