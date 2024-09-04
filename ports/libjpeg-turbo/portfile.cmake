@@ -49,6 +49,9 @@ vcpkg_cmake_configure(
         -DENABLE_EXECUTABLES=OFF
         -DINSTALL_DOCS=OFF
         -DWITH_CRT_DLL=${WITH_CRT_DLL}
+        # libjpeg-turbo doesn't know about clang on Windows; only considers 'vc' and 'mingw', make it think we're building for vc:
+        # (https://github.com/libjpeg-turbo/libjpeg-turbo/blob/dd8b15ee82b02e41307f9ca9144d8ca140d67816/cmakescripts/BuildPackages.cmake#L71)
+        -DINST_ID=vc
         ${FEATURE_OPTIONS}
         ${LIBJPEGTURBO_SIMD}
     OPTIONS_DEBUG

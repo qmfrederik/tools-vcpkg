@@ -28,6 +28,9 @@ vcpkg_cmake_configure(
         -DCREATE_LZMA_SYMLINKS=OFF
         -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT=   # using flags from (vcpkg) toolchain
         -DENABLE_NLS=OFF # nls is not supported by this port, yet
+        # Pretend to be msvc, as otherwise the build system will default to GCC-style semantics (and we're using clang)
+        # https://github.com/tukaani-project/xz/blob/68c54e45d042add64a4cb44bfc87ca74d29b87e2/CMakeLists.txt#L1389
+        -DMSVC=1
     MAYBE_UNUSED_VARIABLES
         CMAKE_MSVC_DEBUG_INFORMATION_FORMAT
         CREATE_XZ_SYMLINKS
