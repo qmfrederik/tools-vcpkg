@@ -33,6 +33,7 @@ vcpkg_install_gnustep(
     OPTIONS
         # gnustep-config is not in PATH, so specify the path to the makefiles
         GNUSTEP_MAKEFILES=${CURRENT_INSTALLED_DIR}/share/GNUstep/Makefiles/
+        GNUSTEP_INSTALLATION_DOMAIN=LOCAL
 )
 
 vcpkg_fixup_pkgconfig()
