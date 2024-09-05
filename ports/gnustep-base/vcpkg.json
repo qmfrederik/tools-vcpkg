@@ -17,6 +17,10 @@
         "platform": "windows"
       },
       {
+        "name": "libxml2",
+        "platform": "windows"
+      },
+      {
         "name": "vcpkg-gnustep",
         "host": true
       }
