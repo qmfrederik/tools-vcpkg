@@ -29,6 +29,8 @@ jobs:
         run: ./vcpkg install gnustep-base:x64-windows-llvm
       - name: Install tiff
         run: ./vcpkg install tiff:x64-windows-llvm
+      - name: Install freetype
+        run: ./vcpkg install freetype:x64-windows-llvm
       - uses: actions/upload-artifact@v4
         if: always()
         with:
