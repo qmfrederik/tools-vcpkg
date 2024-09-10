@@ -78,11 +78,8 @@ function(vcpkg_configure_gnustep)
             list(APPEND all_buildtypes RELEASE)
         endif()
 
-        # Allow ./configure to find gnustep-config, which is in bin/
-        set(path_backup $ENV{PATH})
-        vcpkg_add_to_path("${CURRENT_INSTALLED_DIR}${path_suffix_${current_buildtype}}/bin")
-
         foreach(current_buildtype IN LISTS all_buildtypes)
+            vcpkg_list(SET CONFIGURE_OPTIONS)
             vcpkg_list(APPEND CONFIGURE_OPTIONS
                                 # ${prefix} has an extra backslash to prevent early expansion when calling `bash -c configure "..."`.
                                 "--prefix=${current_installed_dir_msys}${path_suffix_${current_buildtype}}"
@@ -104,15 +101,20 @@ function(vcpkg_configure_gnustep)
             set(target_dir "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-${short_name_${current_buildtype}}")
             file(COPY "${SOURCE_PATH}/" DESTINATION "${target_dir}")
 
+            # Allow ./configure to find gnustep-config, which is in bin/
+            set(path_backup $ENV{PATH})
+            vcpkg_add_to_path("${CURRENT_INSTALLED_DIR}${path_suffix_${current_buildtype}}/bin")
+            
             vcpkg_execute_required_process(
                 COMMAND ${base_cmd} -c "./configure ${CONFIGURE_OPTIONS}"
                 WORKING_DIRECTORY "${target_dir}"
                 LOGNAME "config-${TARGET_TRIPLET}-${short_name_${current_buildtype}}"
                 SAVE_LOG_FILES config.log
             )
+
+            set(ENV{PATH} "${path_backup}")
         endforeach()
         
-        set(ENV{PATH} "${path_backup}")
     else()
         message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION} is not implemented for your platform")
     endif()
