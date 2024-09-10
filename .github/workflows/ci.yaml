@@ -25,6 +25,8 @@ jobs:
         run: ./vcpkg install libffi:x64-windows-llvm
       - name: Install libxml2
         run: ./vcpkg install libxml2:x64-windows-llvm
+      - name: Install curl
+        run: ./vcpkg install curl:x64-windows-llvm
       - name: Install gnustep-base
         run: ./vcpkg install gnustep-base:x64-windows-llvm
       - name: Install tiff
