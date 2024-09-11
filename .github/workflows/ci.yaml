@@ -69,11 +69,11 @@ jobs:
       - name: Install dependencies (Ubuntu)
         run: |
           apt-get update
-          apt-get install -y clang curl zip unzip tar git pkg-config make
+          apt-get install -y clang lld curl zip unzip tar git pkg-config make
         if: matrix.family == 'ubuntu'
       - name: Install dependencies (Enterprise Linux)
         run: |
-          yum install -y clang zip unzip tar git pkg-config which
+          yum install -y clang lld zip unzip tar git pkg-config which
         if: matrix.family == 'rhel'
       - name: Bootstrap vcpkg
         run: ./bootstrap-vcpkg.sh
