@@ -1,0 +1,130 @@
+From c64083eaff9bf6fc2829efbb10b5f2d789d78463 Mon Sep 17 00:00:00 2001
+From: Frederik Carlier <frederik.carlier@keysight.com>
+Date: Wed, 11 Sep 2024 12:05:53 +0000
+Subject: [PATCH] Fix Windows compilation issues
+
+---
+ CMakeLists.txt            | 14 ++++++++------
+ src/init.c                |  2 +-
+ tests/dispatch_io.c       |  2 +-
+ tests/dispatch_io_muxed.c |  2 +-
+ tests/dispatch_read2.c    |  4 ++--
+ tests/dispatch_test.c     |  2 +-
+ tests/dispatch_vnode.c    |  2 +-
+ 7 files changed, 15 insertions(+), 13 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 57a37d3..4dcc332 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -18,12 +18,14 @@ if("${CMAKE_C_SIMULATE_ID}" STREQUAL "MSVC")
+ endif()
+ 
+ if(CMAKE_SYSTEM_NAME STREQUAL Windows)
+-  include(DispatchWindowsSupport)
+-  dispatch_windows_arch_spelling(${CMAKE_SYSTEM_PROCESSOR} DISPATCH_MSVC_ARCH)
+-  dispatch_windows_include_for_arch(${DISPATCH_MSVC_ARCH} DISPATCH_INCLUDES)
+-  include_directories(BEFORE SYSTEM ${DISPATCH_INCLUDES})
+-  dispatch_windows_lib_for_arch(${CMAKE_SYSTEM_PROCESSOR} DISPATCH_LIBDIR)
+-  link_directories(${DISPATCH_LIBDIR})
++  if("${CMAKE_C_COMPILER_FRONTEND_VARIANT}" STREQUAL "MSVC")
++    include(DispatchWindowsSupport)
++    dispatch_windows_arch_spelling(${CMAKE_SYSTEM_PROCESSOR} DISPATCH_MSVC_ARCH)
++    dispatch_windows_include_for_arch(${DISPATCH_MSVC_ARCH} DISPATCH_INCLUDES)
++    include_directories(BEFORE SYSTEM ${DISPATCH_INCLUDES})
++    dispatch_windows_lib_for_arch(${CMAKE_SYSTEM_PROCESSOR} DISPATCH_LIBDIR)
++    link_directories(${DISPATCH_LIBDIR})
++  endif()
+ 
+   include(CheckCSourceCompiles)
+   check_c_source_compiles([=[
+diff --git a/src/init.c b/src/init.c
+index d54da41..9b2ee91 100644
+--- a/src/init.c
++++ b/src/init.c
+@@ -1409,7 +1409,7 @@ _dispatch_strdup_if_mutable(const char *str)
+ 	}
+ 	return str;
+ #else
+-	return strdup(str);
++	return _strdup(str);
+ #endif
+ }
+ 
+diff --git a/tests/dispatch_io.c b/tests/dispatch_io.c
+index fbfcb60..150984a 100644
+--- a/tests/dispatch_io.c
++++ b/tests/dispatch_io.c
+@@ -276,7 +276,7 @@ test_io_read_write(void)
+ 		test_errno("mkstemp", errno, 0);
+ 		test_stop();
+ 	}
+-	if (unlink(path_out) == -1) {
++	if (_unlink(path_out) == -1) {
+ 		test_errno("unlink", errno, 0);
+ 		test_stop();
+ 	}
+diff --git a/tests/dispatch_io_muxed.c b/tests/dispatch_io_muxed.c
+index bc7c57c..bb22942 100644
+--- a/tests/dispatch_io_muxed.c
++++ b/tests/dispatch_io_muxed.c
+@@ -70,7 +70,7 @@ test_file_muxed(void)
+ 		test_errno("mkstemp", errno, 0);
+ 		test_stop();
+ 	}
+-	if (unlink(path) == -1) {
++	if (_unlink(path) == -1) {
+ 		test_errno("unlink", errno, 0);
+ 		test_stop();
+ 	}
+diff --git a/tests/dispatch_read2.c b/tests/dispatch_read2.c
+index 0e45359..1b34b9d 100644
+--- a/tests/dispatch_read2.c
++++ b/tests/dispatch_read2.c
+@@ -226,7 +226,7 @@ test_read_write(void)
+ 		test_errno("mkstemp", errno, 0);
+ 		test_stop();
+ 	}
+-	if (unlink(path_out) == -1) {
++	if (_unlink(path_out) == -1) {
+ 		test_errno("unlink", errno, 0);
+ 		test_stop();
+ 	}
+@@ -310,7 +310,7 @@ test_read_writes(void) // <rdar://problem/7785143>
+ 		test_errno("mkstemp", errno, 0);
+ 		test_stop();
+ 	}
+-	if (unlink(path_out) == -1) {
++	if (_unlink(path_out) == -1) {
+ 		test_errno("unlink", errno, 0);
+ 		test_stop();
+ 	}
+diff --git a/tests/dispatch_test.c b/tests/dispatch_test.c
+index d84a7b2..d1c69a4 100644
+--- a/tests/dispatch_test.c
++++ b/tests/dispatch_test.c
+@@ -198,7 +198,7 @@ dispatch_test_release_large_file(const char *path)
+ 	// The path is fixed to a system file - do nothing
+ 	(void)path;
+ #elif defined(__unix__) || defined(_WIN32)
+-	if (unlink(path) < 0) {
++	if (_unlink(path) < 0) {
+ 		perror("unlink");
+ 	}
+ #else
+diff --git a/tests/dispatch_vnode.c b/tests/dispatch_vnode.c
+index b97ab75..dd13ea4 100644
+--- a/tests/dispatch_vnode.c
++++ b/tests/dispatch_vnode.c
+@@ -104,7 +104,7 @@ main(void)
+ 		dispatch_release(monitorSource);
+ 	}
+ 	fprintf(stderr, "\n");
+-	unlink(currentName);
++	_unlink(currentName);
+ 	dispatch_release(g);
+ 	dispatch_release(renamedSemaphore);
+ 	test_long("VNODE RENAME notifications", notifications, ITERATIONS);
+-- 
+2.46.0.windows.1
+
