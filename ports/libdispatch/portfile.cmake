@@ -21,6 +21,7 @@ vcpkg_cmake_configure(
     OPTIONS
         "-D BUILD_SHARED_LIBS=YES"
         "-D BlocksRuntime_INCLUDE_DIR=${CURRENT_INSTALLED_DIR}/include"
+        "-D BUILD_TESTING=NO"
     OPTIONS_RELEASE
         "-D BlocksRuntime_LIBRARIES=${CURRENT_INSTALLED_DIR}/lib/${libobjc_name}"
     OPTIONS_DEBUG
