@@ -17,6 +17,7 @@ function(vcpkg_configure_gnustep)
             # GNUstep does not support out-of-tree builds
             COPY_SOURCE
             OPTIONS
+                "LDFLAGS=-fuse-ld=lld"
                 ${arg_OPTIONS}
         )
     elseif(VCPKG_TARGET_IS_WINDOWS)
