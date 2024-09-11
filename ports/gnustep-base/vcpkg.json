@@ -21,6 +21,10 @@
         "platform": "windows"
       },
       {
+        "name": "curl",
+        "platform": "windows"
+      },
+      {
         "name": "vcpkg-gnustep",
         "host": true
       }
