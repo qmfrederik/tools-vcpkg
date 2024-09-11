@@ -9,15 +9,22 @@ vcpkg_from_github(
         0001-Fix-Windows-compilation-issues.patch
         0001-Use-external-BlocksRuntime.patch
 )
+
+set(libobjc_name "libobjc.so")
+
+if(VCPKG_TARGET_IS_WINDOWS)
+    set(libobjc_name "objc.lib")
+endif()
+
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS
         "-D BUILD_SHARED_LIBS=YES"
         "-D BlocksRuntime_INCLUDE_DIR=${CURRENT_INSTALLED_DIR}/include"
     OPTIONS_RELEASE
-        "-D BlocksRuntime_LIBRARIES=${CURRENT_INSTALLED_DIR}/lib/objc.lib"
+        "-D BlocksRuntime_LIBRARIES=${CURRENT_INSTALLED_DIR}/lib/${libobjc_name}"
     OPTIONS_DEBUG
-        "-D BlocksRuntime_LIBRARIES=${CURRENT_INSTALLED_DIR}/debug/lib/objc.lib"
+        "-D BlocksRuntime_LIBRARIES=${CURRENT_INSTALLED_DIR}/debug/lib/${libobjc_name}"
 )
 vcpkg_cmake_install()
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include")
