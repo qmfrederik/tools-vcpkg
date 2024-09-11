@@ -6,7 +6,7 @@ vcpkg_from_github(
     HEAD_REF main
     PATCHES
         0001-Use-CMAKE_C_COMPILER_FRONTEND_VARIANT-to-detect-msvc.patch
-        0001-Fix-Windows-compilation-issues.patch
+        0001-Fix-Windows-compatibility.patch
         0001-Use-external-BlocksRuntime.patch
 )
 
